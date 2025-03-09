@@ -3,11 +3,13 @@ from jose import JWTError, jwt
 from fastapi import HTTPException, Depends, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from dotenv import load_dotenv
 from db.base import SessionLocal
 from users.utils import get_user
+from core.commons import get_secret_key
 
-load_dotenv()
+ALGORITHM = get_secret_key("ALGORITHM")
+SECRET_KEY = get_secret_key("SECRET_KEY")
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
@@ -27,5 +29,5 @@ def get_current_user(db: Session = Depends(SessionLocal), token: str = Depends(o
         if user is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
         return user
-    except JWTError:
+    except JWTError as exc:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
