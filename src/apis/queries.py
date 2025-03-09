@@ -1,4 +1,5 @@
 
+from sqlalchemy import
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 from db.models import Product, User
@@ -51,12 +52,7 @@ def create_product(db: Session, name: str, stock_quantity: int, description: str
     return product
 
 def get_product_by_id(db: Session, id: int):
-    """
-    get product by id 
-    Args:
-        db (Session): session db object
-        id (int): id of product 
-    """
+    
     return db.query(User).filter(Product.id == id).first()
 
 def get_all_products(db: Session):
