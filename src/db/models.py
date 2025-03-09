@@ -29,11 +29,11 @@ class Product(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     description = Column(String)
     price = Column(Float, nullable=False)
-    stock = Column(Integer, nullable=False)
+    stock_quantity = Column(Integer, nullable=False)
     description = Column(String, nullable=True)
     __table_args__ = (
         CheckConstraint('price > 0.0', name='check_price_non_negative'),
-        CheckConstraint('stock >= 0', name='check_stock_non_negative'),
+        CheckConstraint('stock_quantity >= 0', name='check_stock_non_negative'),
     )
 
 
