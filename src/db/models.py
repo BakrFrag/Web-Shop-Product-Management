@@ -1,6 +1,6 @@
-from sqlalchemy.orm import Session
-from base import Base, engine
 from sqlalchemy import Column, Integer, String
+from db.base import Base, engine
+
 
 class User(Base):
     __tablename__ = "users"

@@ -50,7 +50,7 @@ def create_user(db: Session, username: str, password: str):
     user_exits = get_user(db, username)
     if user_exits:
         raise HTTPException(detail="username is already assigned to anther user, try to register with different username", status_code = status.HTTP_400_BAD_REQUEST)
-    db_user = User(username=username, hashed_password=hashed_password)
+    db_user = User(username=username, password=hashed_password)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)

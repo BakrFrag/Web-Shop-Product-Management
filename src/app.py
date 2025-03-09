@@ -4,7 +4,7 @@ from core.logger import setup_logging
 
 setup_logging()
 app = FastAPI()
-app.include_router(user_router,prefix="/api")
+app.include_router(user_router,prefix="/api/users")
 
 if __name__ == "__main__":
     import uvicorn
