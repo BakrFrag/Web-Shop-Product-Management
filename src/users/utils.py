@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from db.models import User
 from passlib.context import CryptContext
+from fastapi import HTTPException, status
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -44,7 +45,11 @@ def create_user(db: Session, username: str, password: str):
         username (str): parsed username
         password (str): parsed password
     """
+    
     hashed_password = hash_password(password)
+    user_exits = get_user(db, username)
+    if user_exits:
+        raise HTTPException(detail="username is already assigned to anther user, try to register with different username", status_code = status.HTTP_400_BAD_REQUEST)
     db_user = User(username=username, hashed_password=hashed_password)
     db.add(db_user)
     db.commit()
