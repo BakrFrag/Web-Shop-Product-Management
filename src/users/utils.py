@@ -1,5 +1,3 @@
-from sqlalchemy.orm import Session
-from db.models import User
 from passlib.context import CryptContext
 from fastapi import HTTPException, status
 
@@ -27,31 +25,3 @@ def verify_password(plain_password: str, hashed_password: str ) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 
-def get_user(db: Session, username: str):
-    """
-    Filter user table in DB and get user matched by username
-    Args:
-        db (session): session object to db, allow interact with db 
-        username (str): parsed username, filed to filter against in DB 
-    """
-    return db.query(User).filter(User.username == username).first()
-
-
-def create_user(db: Session, username: str, password: str):
-    """
-    create user object row in User table
-    Args:
-        db (session): session object to db, allow interact with db 
-        username (str): parsed username
-        password (str): parsed password
-    """
-    
-    hashed_password = hash_password(password)
-    user_exits = get_user(db, username)
-    if user_exits:
-        raise HTTPException(detail="username is already assigned to anther user, try to register with different username", status_code = status.HTTP_400_BAD_REQUEST)
-    db_user = User(username=username, password=hashed_password)
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return db_user
