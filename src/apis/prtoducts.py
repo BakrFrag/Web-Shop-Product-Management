@@ -5,3 +5,4 @@ from apis.schemas import ProductCreate, ProductResponse
 
 
 product_router = APIRouter()
+
