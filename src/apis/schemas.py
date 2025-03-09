@@ -18,3 +18,11 @@ class UserLoginOrCreate(User):
     """
     password: str 
     
+class TokenResponse(BaseModel):
+    """
+    Token Response model, include access token after login 
+    Args:
+        access_token: str 
+            access token back to user
+    """
+    access_token: str
