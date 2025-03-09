@@ -30,7 +30,7 @@ def list_all_products(db: Session = Depends(get_db)):
     return get_products_list(db)
 
 
-@product_router.get("/products/{product_id}", tags = ["products"], response_model = ProductResponse)
+@product_router.get("/products/{product_id}/", tags = ["products"], response_model = ProductResponse)
 def get_product(product_id: int, db: Session = Depends(get_db)):
     """
     get product by id, product price will be adjusted as stock quantity

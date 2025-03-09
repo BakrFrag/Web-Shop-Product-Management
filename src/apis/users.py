@@ -11,7 +11,7 @@ from apis.schemas import UserLoginOrCreate, TokenResponse
 
 user_router = APIRouter()
 
-@user_router.post("/register")
+@user_router.post("users/register", tags = ["users"])
 async def register(user: UserLoginOrCreate, db: Session = Depends(get_db)):
     """
     register new user 
@@ -28,7 +28,7 @@ async def register(user: UserLoginOrCreate, db: Session = Depends(get_db)):
     return {"message": "User registered successfully"}
 
 
-@user_router.post("/login", response_model = TokenResponse)
+@user_router.post("users/login",tags = ["users"], response_model = TokenResponse)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     """
     login, successfully login gain access token, token not remain forever it's expire after some time
@@ -42,10 +42,3 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     
     access_token = create_access_token(data={"sub": user.username}, expires_delta=timedelta(minutes=15))
     return {"access_token": access_token, "token_type": "bearer"}
-
-@user_router.get("/me")
-async def read_users_me(current_user: dict = Depends(get_current_user)):
-    """
-    get current user username
-    """
-    return {"username": current_user.username}
