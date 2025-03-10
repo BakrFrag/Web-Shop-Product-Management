@@ -43,8 +43,8 @@ simple web shop system that allow authenticated user to get list of products or 
 	- clone project repo from Github `git clone https://github.com/BakrFrag/Web-Shop-Product-Management`
 	- move to project folder `cd Web-Shop-Product-Management`
 	- create `.env` file at root folder and set `env variables` with their values 
-	- create virtual env and activate project `poetry shell` 
-	- install requirements from `pyproject.toml` `poetry add`
+	- create virtual env and activate project `poetry env activate` 
+	- install requirements from `pyproject.toml` `poetry install`
 	- run local web server for dev or test `python src/app.py`
 	- now application is listening and process requests on local host port `8000`
 ## ENV variables 
