@@ -7,8 +7,8 @@ RUN curl -sSL https://install.python-poetry.org | python3 -
 ENV PATH="/root/.local/bin:$PATH"
 RUN python --version && poetry --version && sqlite3 --version
 COPY pyproject.toml /app/
-RUN poetry shell 
-RUN poetry add 
+RUN poetry env activate
+RUN poetry install
 COPY . .
 WORKDIR src
 CMD ["uvicorn","src/app.py"]
