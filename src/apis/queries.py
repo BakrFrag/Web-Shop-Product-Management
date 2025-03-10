@@ -122,3 +122,27 @@ def get_products_list(db: Session):
         }
         for product in products
     ] if products else []
+    
+    
+def update_product(db: Session, product_id: int, price: float, stock_quantity: int, name: str, description: str):
+    """
+    update product by id 
+    Args:
+        db (Session): db object 
+        product_id (int): the id of product 
+        price (float): the product price 
+        stock_quantity (int): number in stock 
+    Raises:
+        HTTPException: trigger if product not exists
+    """
+    product = get_product_by_id(db, product_id)
+    if not product:
+        logger.error(f"product with id {product_id} not exits ")
+        raise HTTPException(detail="product not exists", status = status.HTTP_404_NOT_FOUND)
+    product.name = name
+    product.description = description
+    product.price = price 
+    product.stock_quantity = stock_quantity
+    db.commit()
+    db.refresh(product)
+    return product
