@@ -1,9 +1,13 @@
 
+import logging
 from sqlalchemy import Case
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 from db import Product, User
 from users import hash_password
+
+
+logger = logging.getLogger("web_shop")
 
 def get_user(db: Session, username: str):
     """
@@ -12,6 +16,7 @@ def get_user(db: Session, username: str):
         db (session): session object to db, allow interact with db 
         username (str): parsed username, filed to filter against in DB 
     """
+    logger.debug(f"query to get user with filter as username as {username}")
     return db.query(User).filter(User.username == username).first()
 
 
@@ -23,15 +28,17 @@ def create_user(db: Session, username: str, password: str):
         username (str): parsed username
         password (str): parsed password
     """
-    
+
     hashed_password = hash_password(password)
     user_exits = get_user(db, username)
     if user_exits:
+        logger.error(f"query to create user with username {username}, username already assigned to anther user")
         raise HTTPException(detail="username is already assigned to anther user, try to register with different username", status_code = status.HTTP_400_BAD_REQUEST)
     db_user = User(username=username, password=hashed_password)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
+    logger.info(f"create new user with unique username {username}")
     return db_user
 
 
@@ -49,6 +56,7 @@ def create_product(db: Session, name: str, stock_quantity: int, description: str
     db.add(product)
     db.commit()
     db.refresh(product)
+    logger.info(f"create new product with as {args}")
     return product
 
 def get_product_by_id(db: Session, id: int):
@@ -74,8 +82,9 @@ def get_product_by_id(db: Session, id: int):
             Product.stock_quantity,
             Product.description,
             Product.name
-        ).filter(Product.id = id ).first()
+        ).filter(Product.id == id ).first()
     )
+    logger.info(f"get product by id {id}, with price as {product.price} and dynamic price as per stock quantity as {round(product.dynamic_price, 2)}")
     return {
         "id": id, "name": product.name, "description": product.description, "price": round(product.dynamic_price, 2), "stock_quantity": product.stock_quantity
     } if product else None
@@ -102,7 +111,7 @@ def get_products_list(db: Session):
         )
         .all()
     )
-
+    logger.info("query to get list of all products with their dynamic prices as per their stock quantity")
     return [
         {
             "id": product.id,

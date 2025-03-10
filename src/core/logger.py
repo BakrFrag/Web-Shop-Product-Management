@@ -16,7 +16,7 @@ logging_config = {
         },
     },
     "loggers": {
-        "yp": { 
+        "web_shop": { 
             "handlers": ["console"],
             "level": "DEBUG",
             "propagate": False,
