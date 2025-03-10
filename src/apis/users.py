@@ -12,7 +12,10 @@ from apis.schemas import UserLoginOrCreate, TokenResponse
 user_router = APIRouter()
 
 @user_router.post("users/register", tags = ["users"])
-async def register(user: UserLoginOrCreate, db: Session = Depends(get_db)):
+async def register(
+    user: UserLoginOrCreate, 
+    db: Session = Depends(get_db)
+):
     """
     register new user 
     Args:
@@ -29,7 +32,10 @@ async def register(user: UserLoginOrCreate, db: Session = Depends(get_db)):
 
 
 @user_router.post("users/login",tags = ["users"], response_model = TokenResponse)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+async def login_for_access_token(
+    form_data: OAuth2PasswordRequestForm = Depends(), 
+    db: Session = Depends(get_db)
+):
     """
     login, successfully login gain access token, token not remain forever it's expire after some time
     Args:
