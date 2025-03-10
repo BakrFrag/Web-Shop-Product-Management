@@ -29,8 +29,8 @@ async def create_user(db: Session, username: str, password: str):
         password (str): parsed password
     """
 
-    hashed_password = hash_password(password)
-    user_exits = get_user(db, username)
+    hashed_password = await hash_password(password)
+    user_exits = await get_user(db, username)
     if user_exits:
         logger.error(f"query to create user with username {username}, username already assigned to anther user")
         raise HTTPException(detail="username is already assigned to anther user, try to register with different username", status_code = status.HTTP_400_BAD_REQUEST)
