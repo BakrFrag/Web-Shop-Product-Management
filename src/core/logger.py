@@ -24,7 +24,7 @@ logging_config = {
     },
 }
 
-def setup_logging():
+def setup_logger():
     """
     setup logging configuration
     """

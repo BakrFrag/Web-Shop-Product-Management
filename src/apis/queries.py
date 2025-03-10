@@ -2,8 +2,8 @@
 from sqlalchemy import Case
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
-from db.models import Product, User
-from users.utils import hash_password
+from db import Product, User
+from users import hash_password
 
 def get_user(db: Session, username: str):
     """

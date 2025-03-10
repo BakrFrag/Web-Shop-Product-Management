@@ -3,9 +3,9 @@ from jose import JWTError, jwt
 from fastapi import HTTPException, Depends, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from db.base import SessionLocal
+from db import SessionLocal
 from users.utils import get_user
-from core.commons import get_secret_key
+from core import get_secret_key
 
 ALGORITHM = get_secret_key("ALGORITHM")
 SECRET_KEY = get_secret_key("SECRET_KEY")

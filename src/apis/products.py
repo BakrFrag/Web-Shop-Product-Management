@@ -1,10 +1,10 @@
 from typing import List
 from fastapi import Depends, HTTPException, APIRouter, status
 from sqlalchemy.orm import Session
-from db.db import get_db
+from db import get_db
 from apis.queries import create_product, get_product_by_id, get_products_list
 from apis.schemas import ProductCreate, ProductResponse
-from users.auth import get_current_user
+from users import get_current_user
 
 product_router = APIRouter()
 
