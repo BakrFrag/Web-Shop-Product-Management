@@ -9,7 +9,7 @@ from users import hash_password
 
 logger = logging.getLogger("web_shop")
 
-def get_user(db: Session, username: str):
+async def get_user(db: Session, username: str):
     """
     Filter user table in DB and get user matched by username
     Args:
@@ -20,7 +20,7 @@ def get_user(db: Session, username: str):
     return db.query(User).filter(User.username == username).first()
 
 
-def create_user(db: Session, username: str, password: str):
+async def create_user(db: Session, username: str, password: str):
     """
     create user object row in User table
     Args:
@@ -42,7 +42,7 @@ def create_user(db: Session, username: str, password: str):
     return db_user
 
 
-def create_product(db: Session, name: str, stock_quantity: int, description: str, price: float):
+async def create_product(db: Session, name: str, description: str, price: float, stock_quantity: int):
     """
     create product row 
     Args:
@@ -56,10 +56,10 @@ def create_product(db: Session, name: str, stock_quantity: int, description: str
     db.add(product)
     db.commit()
     db.refresh(product)
-    logger.info(f"create new product with as {args}")
+    logger.info(f"create new product with as {name} like {description}")
     return product
 
-def get_product_by_id(db: Session, id: int):
+async def get_product_by_id(db: Session, id: int):
     """
     get product by id
     adjust price of product as
@@ -77,20 +77,24 @@ def get_product_by_id(db: Session, id: int):
             Case(
                 (Product.stock_quantity == 0, Product.price),  # If stock is 0, return original price
                 (Product.stock_quantity <= 5, Product.price * 1.05),  # If stock <= 5, increase by 5%
-                else_=Product.price * 0.93,  #  if stock_quantity > 5, decease by 7%
+                else_=Product.price * 0.93,  #  if stock_quantity > 5, decrease by 7%
             ).label("dynamic_price"),
             Product.stock_quantity,
             Product.description,
-            Product.name
+            Product.name,
+            Product.price
         ).filter(Product.id == id ).first()
     )
-    logger.info(f"get product by id {id}, with price as {product.price} and dynamic price as per stock quantity as {round(product.dynamic_price, 2)}")
-    return {
-        "id": id, "name": product.name, "description": product.description, "price": round(product.dynamic_price, 2), "stock_quantity": product.stock_quantity
-    } if product else None
+    if product:
+        logger.info(f"get product by id {id}, with price as {product.price} and dynamic price as per stock quantity as {round(product.dynamic_price, 2)}")
+        return {
+            "id": id, "name": product.name, "description": product.description, "price": round(product.dynamic_price, 2), "stock_quantity": product.stock_quantity
+        } 
+    logger.debug(f"no product with related id {id}, not found")
+    raise HTTPException(detail="product not exits", status_code = status.HTTP_404_NOT_FOUND)
 
 
-def get_products_list(db: Session):
+async def get_products_list(db: Session):
     """
     get all products with price adjust as 
     if stock_quantity = 0, return original price 
@@ -107,7 +111,8 @@ def get_products_list(db: Session):
             ).label("dynamic_price"),
             Product.stock_quantity,
             Product.description,
-            Product.name
+            Product.name,
+            Product.price
         )
         .all()
     )
@@ -117,32 +122,30 @@ def get_products_list(db: Session):
             "id": product.id,
             "name": product.name,
             "price": round(product.dynamic_price, 2),
-            "stock": product.stock,
+            "stock_quantity": product.stock_quantity,
             "description": product.description,
         }
         for product in products
     ] if products else []
     
     
-def update_product(db: Session, product_id: int, price: float, stock_quantity: int, name: str, description: str):
+async def update_product(db: Session, product_id: int, product_update_data: dict):
     """
     update product by id 
     Args:
         db (Session): db object 
         product_id (int): the id of product 
-        price (float): the product price 
-        stock_quantity (int): number in stock 
+        product_update_data (dict): update product data
     Raises:
         HTTPException: trigger if product not exists
     """
-    product = get_product_by_id(db, product_id)
+    
+    product = db.query(Product).filter(Product.id == product_id).first()
     if not product:
-        logger.error(f"product with id {product_id} not exits ")
-        raise HTTPException(detail="product not exists", status = status.HTTP_404_NOT_FOUND)
-    product.name = name
-    product.description = description
-    product.price = price 
-    product.stock_quantity = stock_quantity
+        logger.error(f"update product that not exists, no product with id {product_id}")
+        raise HTTPException(detail="product not exists", status_code = status.HTTP_404_NOT_FOUND)
+    for key,value in product_update_data.items():
+        setattr(product, key, value)
     db.commit()
     db.refresh(product)
     return product

@@ -24,10 +24,10 @@ async def register(
     Raises:
         HTTPException: in case register include username already assigned to anther one 
     """
-    db_user = get_user(db, user.username)
+    db_user = await get_user(db, user.username)
     if db_user:
         raise HTTPException(status_code = status.HTTP_400_BAD_REQUEST, detail="Username already taken")
-    create_user(db, user.username, user.password)
+    await create_user(db, user.username, user.password)
     return {"message": "User registered successfully"}
 
 
@@ -42,9 +42,9 @@ async def login_for_access_token(
         form_data: include data to login 
         db (session): session object allow db interactions
     """
-    user = get_user(db, form_data.username)
-    if not user or not verify_password(form_data.password, user.password):
+    user = await get_user(db, form_data.username)
+    if not user or not await verify_password(form_data.password, user.password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password")
     
-    access_token = create_access_token(data={"sub": user.username}, expires_delta=timedelta(minutes=15))
+    access_token = await create_access_token(data={"sub": user.username}, expires_delta=timedelta(minutes=15))
     return {"access_token": access_token, "token_type": "bearer"}

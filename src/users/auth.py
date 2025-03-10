@@ -4,7 +4,7 @@ from jose import JWTError, jwt
 from fastapi import HTTPException, Depends, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from db import SessionLocal, User
+from db import get_db, User
 from core import get_secret_key
 from users.utils import hash_password
 
@@ -14,7 +14,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 logger = logging.getLogger("web_shop")
 
-def get_user(db: Session, username: str):
+async def get_user(db: Session, username: str):
     """
     Filter user table in DB and get user matched by username
     Args:
@@ -25,7 +25,7 @@ def get_user(db: Session, username: str):
     return db.query(User).filter(User.username == username).first()
 
 
-def create_user(db: Session, username: str, password: str):
+async def create_user(db: Session, username: str, password: str):
     """
     create user object row in User table
     Args:
@@ -47,7 +47,7 @@ def create_user(db: Session, username: str, password: str):
     return db_user
 
 
-def create_access_token(data: dict, expires_delta: timedelta | None = None):
+async def create_access_token(data: dict, expires_delta: timedelta | None = None):
     """
     generate access token
     Args:
@@ -61,7 +61,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
-def get_current_user(db: Session = Depends(SessionLocal), token: str = Depends(oauth2_scheme)):
+async def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
     """
     get current login user
     Args:
