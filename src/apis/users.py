@@ -11,7 +11,7 @@ from apis.schemas import UserLoginOrCreate, TokenResponse
 
 user_router = APIRouter()
 
-@user_router.post("users/register", tags = ["users"])
+@user_router.post("/users/register", tags = ["users"])
 async def register(
     user: UserLoginOrCreate, 
     db: Session = Depends(get_db)
@@ -31,9 +31,9 @@ async def register(
     return {"message": "User registered successfully"}
 
 
-@user_router.post("users/login",tags = ["users"], response_model = TokenResponse)
+@user_router.post("/users/login",tags = ["users"], response_model = TokenResponse)
 async def login_for_access_token(
-    form_data: OAuth2PasswordRequestForm = Depends(), 
+    form_data: UserLoginOrCreate, 
     db: Session = Depends(get_db)
 ):
     """
@@ -43,7 +43,7 @@ async def login_for_access_token(
         db (session): session object allow db interactions
     """
     user = get_user(db, form_data.username)
-    if not user or not verify_password(form_data.password, user.hashed_password):
+    if not user or not verify_password(form_data.password, user.password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username or password")
     
     access_token = create_access_token(data={"sub": user.username}, expires_delta=timedelta(minutes=15))

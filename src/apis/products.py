@@ -11,8 +11,8 @@ product_router = APIRouter()
 
 @product_router.post("/products/", tags = ["products"], response_model = ProductResponse)
 async def create_new_product(
-    product: ProductCreate, db: 
-    Session = Depends(get_db), 
+    product: ProductCreate, 
+    db: Session = Depends(get_db), 
     current_user: dict = Depends(get_current_user)
 ):
     """
@@ -26,35 +26,19 @@ async def create_new_product(
 
 
 @product_router.get("/products/", tags = ["products"], response_model = List[ProductResponse])
+@product_router.get("/products/{product_id}/", tags = ["products"], response_model = ProductResponse)
 async def list_all_products(
+    product_id: int,
     db: Session = Depends(get_db), 
     current_user: dict = Depends(get_current_user)
 ):
     """
-    list and get all products with their price adjusted as stock_quantity
+    list or get specific product with their prices adjusted as per stock quantity
     Args:
+        product_id (int): specific product id
         db (Session): db session object
         current_user: current login user
     """
-    return get_products_list(db)
+     
+    return get_product_by_id(db, product_id) if product_id else get_products_list(db)
 
-
-@product_router.get("/products/{product_id}/", tags = ["products"], response_model = ProductResponse)
-async def get_product(  
-    product_id: int, 
-    db: Session = Depends(get_db), 
-    current_user: dict = Depends(get_current_user)
-):
-    """
-    get product by id, product price will be adjusted as stock quantity
-    Args:
-        db (session): db session object 
-        product_id (int): id of project, parsed as url variable
-        current_user: current login user
-    Raises:
-        HTTPException: if product not exits     
-    """
-    product = get_product_by_id(db, product_id)
-    if not product:
-        raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail="Product not found")
-    return product
