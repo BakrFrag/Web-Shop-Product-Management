@@ -10,5 +10,4 @@ COPY pyproject.toml /app/
 RUN poetry env activate
 RUN poetry install
 COPY . .
-WORKDIR src
 CMD ["uvicorn","src/app.py"]
