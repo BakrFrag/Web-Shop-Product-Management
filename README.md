@@ -13,11 +13,11 @@ simple web shop system that allow authenticated user to get list of products or 
 - `Users` table include users info like `username` and `password`
 - `Products` table include product info like `name`, `description`, `stock_quantity` and `price`
 	- Constraints
-			- `Users` table `username` field must be `unique`
-			- `Users` `id` unique , include index and auto generated
-			- `Products` table `stock_quantity` must be >= `0`
-			- `Products` table `price` must be > `0.0`
-			- `Products` `id` unique , include index and auto generated
+		- `Users` table `username` field must be `unique`
+		- `Users` `id` unique , include index and auto generated
+		- `Products` table `stock_quantity` must be >= `0`
+		- `Products` table `price` must be > `0.0`
+		- `Products` `id` unique , include index and auto generated
 ## API End Points 
 |  HTTP Method| url  | Description|
 |--|--|-|
@@ -63,6 +63,17 @@ simple web shop system that allow authenticated user to get list of products or 
 - `routers` are applied on `Users` and `Products` , all routers are aggregated in `app.py` 
 - asynchronous is used over all application , allow much more faster 
 
-
+### Dependencies
+|Name| Usage  |
+|--|--|
+|  Python| programming language  |
+| fastapi| backend framework based on python programming|
+|sqlite3| DB for testing and development purposes |
+|slowapi| python based library for rate limit |
+|uvicorn| asynchronous web server |
+|git| version control | 
+| poetry| python project management tool| 
+| sqlalchemy| python based `ORM` library |
+|python-dotenv| manage secrets and env variables |
 
  
