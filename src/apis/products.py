@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from fastapi import Depends, HTTPException, APIRouter, status
 from sqlalchemy.orm import Session
 from db import get_db
@@ -26,21 +26,36 @@ async def create_new_product(
 
 
 @product_router.get("/products/", tags = ["products"], response_model = List[ProductResponse])
-@product_router.get("/products/{product_id}/", tags = ["products"], response_model = ProductResponse)
+async def list_all_products(
+    db: Session = Depends(get_db), 
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    list products with their prices adjusted as per stock quantity
+    Args:
+        product_id (int): specific product id
+        db (Session): db session object
+        current_user: current login user
+    """
+    return get_products_list(db)
+
+
+@product_router.get("/products/{product_id}", tags = ["products"], response_model = List[ProductResponse])
 async def list_all_products(
     product_id: int,
     db: Session = Depends(get_db), 
     current_user: dict = Depends(get_current_user)
 ):
     """
-    list or get specific product with their prices adjusted as per stock quantity
+    list products with their prices adjusted as per stock quantity
     Args:
         product_id (int): specific product id
         db (Session): db session object
         current_user: current login user
     """
-     
-    return get_product_by_id(db, product_id) if product_id else get_products_list(db)
+    return get_product_by_id(db , product_id)
+
+
 
 @product_router.put("/products/{product_id}", tags = ["products"], response_model= ProductResponse)
 async def update_product_by_id(

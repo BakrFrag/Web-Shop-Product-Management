@@ -43,8 +43,7 @@ class ProductCreate(BaseModel):
     price: float = Field(..., ge=0.0, description="Price must be a positive number")
     stock_quantity: int = Field(..., ge=0, description="Stock count must be non-negative") 
     description: Optional[str] = Field(None, max_length=255, description="Optional description of the product")
-    class Config:
-        orm_mode = True 
+  
 
 # Product response model including all attributes
 class ProductResponse(ProductCreate):
