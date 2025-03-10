@@ -10,7 +10,11 @@ product_router = APIRouter()
 
 
 @product_router.post("/products/", tags = ["products"], response_model = ProductResponse)
-async def create_new_product(product: ProductCreate, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+async def create_new_product(
+    product: ProductCreate, db: 
+    Session = Depends(get_db), 
+    current_user: dict = Depends(get_current_user)
+):
     """
     create new product
     Args:
@@ -22,7 +26,10 @@ async def create_new_product(product: ProductCreate, db: Session = Depends(get_d
 
 
 @product_router.get("/products/", tags = ["products"], response_model = List[ProductResponse])
-async def list_all_products(db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+async def list_all_products(
+    db: Session = Depends(get_db), 
+    current_user: dict = Depends(get_current_user)
+):
     """
     list and get all products with their price adjusted as stock_quantity
     Args:
@@ -33,7 +40,11 @@ async def list_all_products(db: Session = Depends(get_db), current_user: dict = 
 
 
 @product_router.get("/products/{product_id}/", tags = ["products"], response_model = ProductResponse)
-async def get_product(product_id: int, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+async def get_product(  
+    product_id: int, 
+    db: Session = Depends(get_db), 
+    current_user: dict = Depends(get_current_user)
+):
     """
     get product by id, product price will be adjusted as stock quantity
     Args:
